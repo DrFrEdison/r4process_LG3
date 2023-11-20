@@ -1,3 +1,4 @@
+# Arbeitspfad und Funktionen laden ####
 setwd( "D:/r4dt_LG3")
 source( "LG3_main.R")
 source( paste0(lg3$wd, "/function/_function_val_drk.R"))
@@ -12,7 +13,7 @@ dir.create("drk_val", showWarning = F)
 setwd( "./drk_val")
 lg3$wd.drk <- getwd()
 
-# drk query ####
+# drk sql query ####
 lg3$query <- sql_query(driver = lg3$para$sql_driver
                        , server = lg3$para$sql_server
                        , database = lg3$para$database
@@ -48,13 +49,15 @@ file.rename(drk.file, drk.file.rename)
 # Validierung
 drk.file.status <- as.character(spectra.validation.drk( lg3$raw$drk[ , lg3$ppp$drk$numcol, with = F]))
 
+# Test für Licht im Dunkelwertspektrum!
 # Wenn Dunkelwertspektrum != valid, dann email! ####
 tryCatch(
   {
     if( drk.file.status != "valid"){
       attachmentObject <- mime_part(x = paste0(lg3$wd.drk , "/", drk.file.rename)
                                     ,name = drk.file.rename)
-      body <- "csv"
+      
+      body <- paste0("Maximale Counts liegen bei ", max(lg3$raw$drk[ , lg3$ppp$drk$numcol, with = F], na.rm = T))
       bodyWithAttachment <- list(body,attachmentObject)
       
       sendmail(from = lg3$para$Fromemail
