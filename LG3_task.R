@@ -7,6 +7,8 @@ Rexe <- paste0(lg3$wd, "/R-Portable/App/R-Portable/bin/x64/Rscript.exe")
 # tasklist <- taskscheduler_ls()
 # View(tasklist)
 # taskscheduler_delete("LG3_csv")
+# taskscheduler_delete("LG3_val_drk")
+# taskscheduler_delete("LG3_val_ref")
 
 # LG3 send csv task
 taskscheduler_create(taskname = "LG3_csv", rscript = paste0( lg3$wd, "/LG3_send_csv.R"),
@@ -14,12 +16,12 @@ taskscheduler_create(taskname = "LG3_csv", rscript = paste0( lg3$wd, "/LG3_send_
 
 # # LG3 drk validation
 taskscheduler_create(taskname = "LG3_val_drk", rscript = paste0( lg3$wd, "/LG3_drk_val.R"),
-                     schedule = "MINUTE", modifier = 15, Rexe = Rexe)
+                     schedule = "MINUTE", modifier = 25, Rexe = Rexe)
 
-# # LG2 ref validation
-# Sys.sleep(120)
-# taskscheduler_create(taskname = "LG3_val_ref", rscript = paste0( lg3$wd, "/LG3_ref_val.R"),
-#                      schedule = "MINUTE", modifier = 15, Rexe = Rexe)
+# # LG3 ref validation
+Sys.sleep(60)
+taskscheduler_create(taskname = "LG3_val_ref", rscript = paste0( lg3$wd, "/LG3_ref_val.R"),
+                     schedule = "MINUTE", modifier = 25, Rexe = Rexe)
 
 # # do every task once ####
 # taskscheduler_create(taskname = "LG3_csv_once", rscript = paste0( lg3$wd, "/LG3_send_csv.R"),

@@ -46,20 +46,22 @@ sql_query <- function(driver = lg3$sql$driver
   }
   
   # Abfragen als .csv schreiben ####
-  if( "ref" %in% ask )  if( nrow( ref.sql.get) > 0) sql_to_csv_LG3( sqlquery = ref.sql.get
+  if( "ref" %in% ask )  if( nrow( ref.sql.get) > 0) path.return <- sql_to_csv_LG3( sqlquery = ref.sql.get
                                                                     , wl = wl
                                                                     , spectratype = "ref"
                                                                     , export_path = export_path)
   
-  if( "drk" %in% ask ) if( nrow( drk.sql.get) > 0) sql_to_csv_LG3( sqlquery = drk.sql.get
+  if( "drk" %in% ask ) if( nrow( drk.sql.get) > 0) path.return <- sql_to_csv_LG3( sqlquery = drk.sql.get
                                                                    , wl = wl
                                                                    , spectratype = "drk"
                                                                    , export_path = export_path)
   
-  if( "spc" %in% ask ) if( nrow( spc.sql.get) > 0) sql_to_csv_LG3( sqlquery = spc.sql.get
+  if( "spc" %in% ask ) if( nrow( spc.sql.get) > 0) path.return <- sql_to_csv_LG3( sqlquery = spc.sql.get
                                                                    , wl = wl
                                                                    , spectratype = "spc"
                                                                    , export_path = export_path)
+
+return(path.return)
 }
 
 

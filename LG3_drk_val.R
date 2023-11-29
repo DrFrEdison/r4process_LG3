@@ -1,4 +1,3 @@
-# Arbeitspfad und Funktionen laden ####
 setwd( "D:/r4dt_LG3")
 source( "LG3_main.R")
 source( paste0(lg3$wd, "/function/_function_val_drk.R"))
@@ -9,11 +8,11 @@ lg3$sql$time.t1 <- paste0(as.character(Sys.time()))
 
 # drk Pfad ####
 setwd(lg3$wd)
-dir.create("drk_val", showWarning = F)
+dir.create("drk_val")
 setwd( "./drk_val")
 lg3$wd.drk <- getwd()
 
-# drk sql query ####
+# drk query ####
 lg3$query <- sql_query(driver = lg3$para$sql_driver
                        , server = lg3$para$sql_server
                        , database = lg3$para$database
@@ -21,7 +20,7 @@ lg3$query <- sql_query(driver = lg3$para$sql_driver
                        , t1 = lg3$sql$time.t1
                        , ref.sql = paste0(lg3$wd, "/sql/dt_sql_bgd_XGuard.sql")
                        , drk.sql = paste0(lg3$wd, "/sql/dt_sql_drk_XGuard.sql")
-                       , spc.sql = paste0(lg3$wd, "/sql/dt_sql_spc_XGuard.sql")
+                       , spc.sql = spc.sql
                        , wl = 190 : 598
                        , ask = c("drk")
                        , wd = lg3$wd
@@ -29,7 +28,7 @@ lg3$query <- sql_query(driver = lg3$para$sql_driver
 
 # Datei ####
 setwd( lg3$wd.drk )
-drk.file <- dir( pattern = "drk_R_export.csv")[ length( dir( pattern = "drk_R_export.csv"))]
+drk.file <- dir( pattern = "_drk_R_export.csv")[ length( dir( pattern = "_drk_R_export.csv"))]
 
 # einlesen ####
 lg3$raw$drk <- fread(drk.file, sep = ";", dec = ",")
@@ -38,7 +37,7 @@ lg3$ppp$drk <- transfer_csv.num.col(lg3$raw$drk)
 
 # nach Datum/Zeit umbenennen
 drk.file.rename <- paste0(gsub("-", "", gsub(":", "", gsub(" ", "_", as.character(lg3$raw$drk$datetime))))
-                          , substr(drk.file, unlist(gregexpr("_", drk.file)[[ 1 ]])[ 2 ], nchar( drk.file)))
+                          , substr(drk.file, 22, nchar( drk.file)))
 
 # wenn keine neune Dunkelwertmessung vorhanden ist, bricht das Skript hier ab
 if(length(dir( pattern = drk.file.rename)) != 0) stop("Kein neuer Dunkelwert gemessen")
@@ -49,22 +48,20 @@ file.rename(drk.file, drk.file.rename)
 # Validierung
 drk.file.status <- as.character(spectra.validation.drk( lg3$raw$drk[ , lg3$ppp$drk$numcol, with = F]))
 
-# Test für Licht im Dunkelwertspektrum!
 # Wenn Dunkelwertspektrum != valid, dann email! ####
 tryCatch(
   {
     if( drk.file.status != "valid"){
       attachmentObject <- mime_part(x = paste0(lg3$wd.drk , "/", drk.file.rename)
                                     ,name = drk.file.rename)
-      
-      body <- paste0("Maximale Counts liegen bei ", max(lg3$raw$drk[ , lg3$ppp$drk$numcol, with = F], na.rm = T))
+      body <- "csv"
       bodyWithAttachment <- list(body,attachmentObject)
       
       sendmail(from = lg3$para$Fromemail
-               , to = lg3$para$Toemail_csv
+               , to = lg3$para$Toemail
                , subject = paste0("Dunkelwertspektrum in ", lg3$para$location, "_", lg3$line
                                   , " am ", substr(as.character(lg3$raw$drk$datetime), 1, 10)
-                                  , " um ", substr(as.character(lg3$raw$drk$datetime), 13, nchar(as.character(lg3$raw$drk$datetime)))
+                                  , " um ", substr(as.character(lg3$raw$drk$datetime), 12, nchar(as.character(lg3$raw$drk$datetime)))
                                   , " Uhr ", drk.file.status, "!")
                , bodyWithAttachment
                , control = list(

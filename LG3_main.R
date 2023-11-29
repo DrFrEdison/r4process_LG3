@@ -23,7 +23,7 @@ lg3$identify <- dir( pattern = "identify.txt")
 
 # Lade Übersichtsdatei und finde die entsprechende Zeile ####
 setwd( lg3$wd )
-lg3$para <- fread("r4dt_LG3.csv")
+lg3$para <- fread("r4process_LG3.csv")
 
 lg3$customer <- substr( lg3$identify, 1, gregexpr("_", lg3$identify)[[ 1 ]][ 1 ] - 1)
 lg3$location <- substr( lg3$identify, gregexpr("_", lg3$identify)[[ 1 ]][ 1 ] + 1, gregexpr("_", lg3$identify)[[ 1 ]][ 2 ] - 1)
@@ -34,6 +34,10 @@ lg3$para$sql_server <- gsub("\\\\+", "\\\\", lg3$para$sql_server)
 lg3$para <- lg3$para[which(lg3$para$customer == lg3$customer &
                              lg3$para$location == lg3$location &
                              lg3$para$line == lg3$line) , ]
+
+# SQL Abfrage für LG3 oder SG3
+if(lg3$para$LG == "LG3") spc.sql <- paste0(lg3$wd, "/sql/dt_sql_spc_XGuard.sql")
+if(lg3$para$LG == "SG3") spc.sql <- paste0(lg3$wd, "/sql/dt_sql_spc_XGuard_SG3.sql")
 
 
 

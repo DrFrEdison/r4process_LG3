@@ -21,7 +21,7 @@ lg3$query <- sql_query(driver = lg3$para$sql_driver
                        , t1 = lg3$sql$time.t1
                        , ref.sql = paste0(lg3$wd, "/sql/dt_sql_bgd_XGuard.sql")
                        , drk.sql = paste0(lg3$wd, "/sql/dt_sql_drk_XGuard.sql")
-                       , spc.sql = paste0(lg3$wd, "/sql/dt_sql_spc_XGuard.sql")
+                       , spc.sql = spc.sql
                        , wl = 190 : 598
                        , ask = c("ref")
                        , wd = lg3$wd
@@ -61,10 +61,10 @@ tryCatch(
       bodyWithAttachment <- list(body,attachmentObject)
       
       sendmail(from = lg3$para$Fromemail
-               , to = lg3$para$Toemail_csv
+               , to = lg3$para$Toemail
                , subject = paste0("Referenz-Spektrum in ", lg3$para$location, "_", lg3$line
                                   , " am ", substr(as.character(lg3$raw$ref$datetime), 1, 10)
-                                  , " um ", substr(as.character(lg3$raw$ref$datetime), 13, nchar(as.character(lg3$raw$ref$datetime)))
+                                  , " um ", substr(as.character(lg3$raw$ref$datetime), 12, nchar(as.character(lg3$raw$ref$datetime)))
                                   , " Uhr ", ref.file.status, "!")
                , bodyWithAttachment
                , control = list(
