@@ -2,7 +2,8 @@ sql_to_csv_LG3 <- function(sqlquery
                            , wl = 190:598
                            , spectratype = NA # c("drk", "ref", "spc")
                            , wd = dt$wd
-                           , export_path = paste0("C://Users/", lg3$para$uid, "/Documents/")){
+                           , export_path = paste0("C://Users/", lg3$para$uid, "/Documents/")
+                           , csv.write = T){
   dat <- list()
   
   # Datei ordnen ####
@@ -40,12 +41,14 @@ sql_to_csv_LG3 <- function(sqlquery
     unlink(dir( pattern = paste0(spectratype, "_R_export.csv")))
   }
   
-  # .csv schreiben ####
-  fwrite( dat$raw
-          , dat$filename <- paste0(unique(dat$raw$date)[ 1 ], "_", max(unique(dat$raw$date)), "_", unique(dat$raw$location), "_", unique(dat$raw$line), "_", spectratype, "_R_export.csv")
-          , sep = ";", dec = ",")
+  dat$filename <- paste0(unique(dat$raw$date)[ 1 ], "_", max(unique(dat$raw$date)), "_", unique(dat$raw$location), "_", unique(dat$raw$line), "_", spectratype, "_R_export.csv")
   
-  return( paste0(export_path, "/", dat$filename ))
+  # .csv schreiben ####
+  if(csv.write) fwrite( dat$raw
+                        , dat$filename
+                        , sep = ";", dec = ",")
+  
+  return( list(paste0(export_path, "/", dat$filename ), dat$raw))
   
 }
 

@@ -9,7 +9,8 @@ sql_query <- function(driver = lg3$sql$driver
                       , wl = 190 : 598
                       , ask = c("ref", "drk", "spc")
                       , wd = lg3$wd
-                      , export_path){
+                      , export_path
+                      , bat = F){
   
   # SQL Connection ####
   con <- dbConnect(odbc()
@@ -47,21 +48,24 @@ sql_query <- function(driver = lg3$sql$driver
   
   # Abfragen als .csv schreiben ####
   if( "ref" %in% ask )  if( nrow( ref.sql.get) > 0) path.return <- sql_to_csv_LG3( sqlquery = ref.sql.get
-                                                                    , wl = wl
-                                                                    , spectratype = "ref"
-                                                                    , export_path = export_path)
+                                                                                   , wl = wl
+                                                                                   , spectratype = "ref"
+                                                                                   , export_path = export_path
+                                                                                   , csv.write = !bat)
   
   if( "drk" %in% ask ) if( nrow( drk.sql.get) > 0) path.return <- sql_to_csv_LG3( sqlquery = drk.sql.get
-                                                                   , wl = wl
-                                                                   , spectratype = "drk"
-                                                                   , export_path = export_path)
+                                                                                  , wl = wl
+                                                                                  , spectratype = "drk"
+                                                                                  , export_path = export_path
+                                                                                  , csv.write = !bat)
   
   if( "spc" %in% ask ) if( nrow( spc.sql.get) > 0) path.return <- sql_to_csv_LG3( sqlquery = spc.sql.get
-                                                                   , wl = wl
-                                                                   , spectratype = "spc"
-                                                                   , export_path = export_path)
-
-return(path.return)
+                                                                                  , wl = wl
+                                                                                  , spectratype = "spc"
+                                                                                  , export_path = export_path
+                                                                                  , csv.write = !bat)
+  
+  return(path.return)
 }
 
 

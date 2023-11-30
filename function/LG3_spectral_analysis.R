@@ -1,4 +1,7 @@
 setwd( "D:/r4dt_LG3")
+
+save.wd <- getwd()
+
 source( "LG3_main.R")
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -24,7 +27,6 @@ if (length(args) >= 1) {
     lg3$sql$time.t0 <- substr(as.character(Sys.time() - batch_n * 60), 1, 19)
     lg3$sql$time.t1 <- substr(as.character(Sys.time()), 1, 19)
     
-    print(lg3$sql$time.t0)
     lg3$query <- sql_query(driver = lg3$para$sql_driver
                            , server = lg3$para$sql_server
                            , database = lg3$para$database
@@ -36,14 +38,25 @@ if (length(args) >= 1) {
                            , wl = 190 : 598
                            , ask = c(batch_type)
                            , wd = lg3$wd 
-                           , export_path = paste0("C://Users/", lg3$para$uid, "/Documents/"))
+                           , export_path = paste0("C://Users/", lg3$para$uid, "/Documents/")
+                           , bat = T)
     
     # Read .csv file
     dat <- list()
-    dat$raw <- fread(lg3$query, sep = ";", dec = ",")
+    dat$raw <- lg3$query[[ 2 ]]
     dat$ppp <- transfer_csv.num.col(dat$raw)
     
-    png(gsub("\\.csv$", "\\.png", basename(lg3$query))
+    setwd(save.wd)
+    setwd("..")
+    
+    filenamep <- paste(gsub(":", "", gsub(" ", "_", gsub("-", "", paste( substr(lg3$sql$time.t0, 3, nchar( lg3$sql$time.t0 ))
+                                                                         , substr(lg3$sql$time.t1, 3, nchar( lg3$sql$time.t0 ))
+                                                                         , sep = "_bis_"))))
+                       , gsub("\\.csv$", "\\.png", substr(basename(lg3$query[[ 1 ]]), 23, nchar( basename(lg3$query[[ 1 ]]) )))
+                       , sep = "_")
+    filenamep <- gsub("_R_export", "", filenamep)
+    
+    png(filenamep
         ,xxx<-4800,xxx/16*9,"px",12,"white",res=500,"sans",T,"cairo")
     
     par( mar = c(3,3,2,8))
@@ -72,16 +85,29 @@ if (length(args) >= 1) {
              , y3
              , xpd = T)
     rect(x1,y1,x2,y2, xpd = T)
-    
-    cumsump <- cumsum(c(0, diff(dat$raw$datetime)))
-    if( max(cumsump) / 60 < 180 )
+
+timestamps <- c(as.character(dat$raw$datetime), as.character(as.POSIXct(lg3$sql$time.t1, tz = "UTC")))
+timestamps <- as.POSIXct(timestamps, tz   = "UTC")
+
+timestamps.list <- list()
+for(i in 2 : length( timestamps )){
+  
+  timestamps.list[[ i - 1]] <- as.numeric(difftime(timestamps[ i ], timestamps[ i - 1], units = "sec"))
+  
+}
+
+timestamps.list <- unlist( timestamps.list )    
+
+
+    cumsump <- cumsum(c(0, timestamps.list))
+    if( max(cumsump) / 60 < 180*60 )
       text(x3 + diff(par("usr")[c(1,2)]) * .0125/2, y3
-           , paste("vor", round((cumsump / 60 )[seq(1, length(cumsump / 60), len = 5)] , 1), "Minuten")
+           , paste("vor", round(seq(range(cumsump)[1], range(cumsump)[2], len = 5)/60, 1), "Minuten")
            , adj = 0, xpd = T, cex = .75)
     
-    if( max(cumsump) / 60 >= 180 )
+    if( max(cumsump) / 60 >= 180*60 )
       text(x3 + diff(par("usr")[c(1,2)]) * .0125/2, y3
-           , paste("vor", round((cumsump / 60 / 60 )[seq(1, length(cumsump / 60 / 60), len = 5)] , 1), "Stunden")
+           , paste("vor", round(seq(range(cumsump)[1], range(cumsump)[2], len = 5)/60/60, 1), "Stunden")
            , adj = 0, xpd = T, cex = .75)
     
     dev.off()

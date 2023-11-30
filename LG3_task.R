@@ -24,8 +24,8 @@ taskscheduler_create(taskname = "LG3_val_ref", rscript = paste0( lg3$wd, "/LG3_r
                      schedule = "MINUTE", modifier = 25, Rexe = Rexe)
 
 # # do every task once ####
-# taskscheduler_create(taskname = "LG3_csv_once", rscript = paste0( lg3$wd, "/LG3_send_csv.R"),
-#                       schedule = "ONCE", Rexe = Rexe)
+ taskscheduler_create(taskname = "LG3_csv_once", rscript = paste0( lg3$wd, "/LG3_send_csv.R"),
+                       schedule = "ONCE", Rexe = Rexe)
 # taskscheduler_create(taskname = "LG3_val_drk_once", rscript = paste0( lg3$wd, "/LG3_drk_val.R"),
 #                       schedule = "ONCE", Rexe = Rexe)
 # taskscheduler_create(taskname = "LG3_val_ref_once", rscript = paste0( lg3$wd, "/LG3_ref_val.R"),
